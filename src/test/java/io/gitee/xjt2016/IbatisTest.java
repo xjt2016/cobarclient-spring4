@@ -17,8 +17,7 @@ public class IbatisTest {
     @Test
     public void test001() throws Exception {
         Employee employee = new Employee();
-        employee.setFkId("1");
-
+        employee.setFkId("2");
         System.out.println(JSON.toJSONString(employeeDao.getAll(employee)));
     }
 }

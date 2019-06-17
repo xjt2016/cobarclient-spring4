@@ -14,8 +14,10 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <version.spring>4.3.21.RELEASE</version.spring>
+
     </properties>
 
     <dependencies>
@@ -29,19 +31,19 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>4.3.21.RELEASE</version>
+            <version>${version.spring}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>4.3.21.RELEASE</version>
+            <version>${version.spring}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.21.RELEASE</version>
+            <version>${version.spring}</version>
         </dependency>
 
         <dependency>
@@ -65,7 +67,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>4.3.21.RELEASE</version>
+            <version>${version.spring}</version>
             <scope>test</scope>
         </dependency>
 
