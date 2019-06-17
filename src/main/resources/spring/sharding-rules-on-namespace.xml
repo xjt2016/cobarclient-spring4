@@ -1,0 +1,14 @@
+<rules>
+
+    <rule>
+        <namespace>Employee</namespace>
+        <shardingExpression>hash.apply(fkId) == 1</shardingExpression>
+        <shards>master1</shards>
+    </rule>
+
+    <rule>
+        <namespace>Employee</namespace>
+        <shardingExpression>hash.apply(fkId) == 2</shardingExpression>
+        <shards>master2</shards>
+    </rule>
+</rules>

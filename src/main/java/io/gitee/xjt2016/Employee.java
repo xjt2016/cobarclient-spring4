@@ -4,7 +4,17 @@ public class Employee {
    private int id;
    private String first_name; 
    private String last_name;   
-   private int salary;  
+   private int salary;
+
+   private String fkId;
+
+   public String getFkId() {
+      return fkId;
+   }
+
+   public void setFkId(String fkId) {
+      this.fkId = fkId;
+   }
 
    /* Define constructors for the Employee class. */
    public Employee() {}

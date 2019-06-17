@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans default-autowire="byName"
+       xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+       http://www.springframework.org/schema/util  http://www.springframework.org/schema/util/spring-util-3.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+       xmlns:context="http://www.springframework.org/schema/context">
+
+    <context:annotation-config/>
+    <!-- 使用annotation 自动注册bean,并检查@Required,@Autowired的属性已被注入 -->
+    <!--<context:component-scan base-package="com.raycloud" />-->
+    <context:component-scan base-package="io.gitee"/>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/kdzs_xcx"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+    <bean id="dataSource2" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/kdzs_xcx2"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="txManager"
+                          proxy-target-class="true"/>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+        <property name="configLocation" value="classpath:/ibatis/SqlMapConfig.xml"/>
+        <property name="mappingLocations" value="classpath*:/ibatis/sqlmap/*.xml"/>
+    </bean>
+
+    <util:set id="shardSet" set-class="java.util.LinkedHashSet">
+        <ref local="master1"/>
+        <ref local="master2"/>
+    </util:set>
+
+    <bean id="master1" class="com.alibaba.cobarclient.Shard">
+        <property name="id" value="master1"/>
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="master2" class="com.alibaba.cobarclient.Shard">
+        <property name="id" value="master2"/>
+        <property name="dataSource" ref="dataSource2"/>
+    </bean>
+
+
+    <util:map id="functionsMap">
+        <entry key="hash" value-ref="hashFunction"/>
+    </util:map>
+
+    <bean id="hashFunction" class="io.gitee.xjt2016.HashFunction"/>
+
+    <bean id="router" class="com.alibaba.cobarclient.config.SimpleRouterFactoryBean">
+        <property name="configLocations">
+            <list>
+                <value>classpath:/spring/namespace.xml</value>
+                <value>classpath:/spring/sharding-rules-on-namespace.xml</value>
+            </list>
+        </property>
+        <property name="functions" ref="functionsMap"/>
+        <property name="shards" ref="shardSet"/>
+    </bean>
+
+    <!-- 工程里一定要使用此工程模板，不能再使用ibatis原生的api，不然有的情况会不经过cobar的过滤-->
+    <bean id="sqlMapClientTemplate" class="com.alibaba.cobarclient.MysdalSqlMapClientTemplate">
+        <property name="sqlMapClient" ref="sqlMapClient"/>
+        <property name="shards" ref="shardSet"/>
+        <property name="router" ref="router"/>
+    </bean>
+
+    <bean id="txManager"
+          class="com.alibaba.cobarclient.transaction.BestEffortMultiDataSourceTransactionManager">
+        <property name="shards" ref="shardSet"/>
+        <property name="transactionSynchronization" value="2"/>
+    </bean>
+</beans>

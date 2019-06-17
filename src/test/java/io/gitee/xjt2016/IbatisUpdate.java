@@ -12,7 +12,7 @@ import java.util.List;
 public class IbatisUpdate {
     public static void main(String[] args)
             throws IOException, SQLException {
-        Reader rd = Resources.getResourceAsReader("SqlMapConfig.xml");
+        Reader rd = Resources.getResourceAsReader("resources/ibatis/sqlmap/SqlMapConfig.xml");
         SqlMapClient smc = SqlMapClientBuilder.buildSqlMapClient(rd);
 
         /* This would update one record in Employee table. */
